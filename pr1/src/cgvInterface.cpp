@@ -7,7 +7,7 @@ extern cgvInterface interface; // the callbacks must be static and this object i
 // Constructor and destructor methods -----------------------------------
 
 cgvInterface::cgvInterface () {
-	// TODO: Practice 1: Initialize the variable 'axes' to TRUE. 
+	// TODO: Practice 1: Initialize the variable 'axes' to TRUE.
 	this->setAxes(true);
 }
 
@@ -16,12 +16,12 @@ cgvInterface::~cgvInterface () {}
 
 // Public methods ----------------------------------------
 
-void cgvInterface::configure_environment(int argc, char** argv, 
-			                       int _width_window, int _height_window, 
-			                       int _pos_X, int _pos_Y, 
+void cgvInterface::configure_environment(int argc, char** argv,
+			                       int _width_window, int _height_window,
+			                       int _pos_X, int _pos_Y,
 													 string _title)
 													 {
-	// initialization of the interface variables																	
+	// initialization of the interface variables
 	width_window = _width_window;
 	height_window = _height_window;
 
@@ -43,7 +43,7 @@ void cgvInterface::init_rendering_loop() {
 
 void cgvInterface::set_glutKeyboardFunc(unsigned char key, int x, int y) {
   switch (key) {
-// TODO: practice 1: Add the code to enable/disable the visualization of the axes after pressing 'a'. 
+// TODO: practice 1: Add the code to enable/disable the visualization of the axes after pressing 'a'.
 	case 97:
 		if (interface.getAxes()) interface.setAxes(false);
 			else interface.setAxes(true);
@@ -56,10 +56,10 @@ void cgvInterface::set_glutKeyboardFunc(unsigned char key, int x, int y) {
 }
 
 void cgvInterface::set_glutReshapeFunc(int w, int h) {
-  // dimension of the viewport with a new width and a new height of the display window 
+  // dimension of the viewport with a new width and a new height of the display window
   glViewport(0,0,(GLsizei) w,(GLsizei) h);
 
-  // store the new values of the viewport and the display window. 
+  // store the new values of the viewport and the display window.
   interface.set_width_window(w);
   interface.set_height_window(h);
 
@@ -80,8 +80,8 @@ void cgvInterface::set_glutDisplayFunc() {
   glPushMatrix(); // store the model matrix
 
   // TODO: Practice 1: Draw the axis
-
-  if (interface.getAxes()) 
+	// Test
+  if (interface.getAxes())
   {
 	  glBegin(GL_LINES);
 
@@ -100,7 +100,7 @@ void cgvInterface::set_glutDisplayFunc() {
 	  glEnd();
   }
   // TODO: Practice 1: draw the object of the scene
-  
+
   glColor3f(0.0f, 0.0f, 0.0f);
   glutWireCube(1.0f);
 
