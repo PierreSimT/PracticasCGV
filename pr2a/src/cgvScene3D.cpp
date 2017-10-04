@@ -39,7 +39,7 @@ void cgvScene3D::render(int scene) {
   GLfloat light0[]={10,8,9,1}; // point light source
   glLightfv(GL_LIGHT0,GL_POSITION,light0);
   glEnable(GL_LIGHT0);
-	
+
 	glPushMatrix(); // store the model matrices
 
 	  // draw the axes
@@ -49,7 +49,7 @@ void cgvScene3D::render(int scene) {
 	  if (scene == SceneA) renderSceneA();
 	  else if (scene == SceneB) renderSceneB();
 
-	glPopMatrix (); // restore the modelview matrix 
+	glPopMatrix (); // restore the modelview matrix
   glutSwapBuffers(); // it is used, instead of glFlush(), to avoid flickering
 }
 
@@ -57,10 +57,10 @@ void cgvScene3D::render(int scene) {
 void tube() {
     static GLUquadric* quad = gluNewQuadric();
 
-    GLfloat color_tube[] = { 0,0,0.5 };    
-    glMaterialfv(GL_FRONT, GL_EMISSION, color_tube);  
-    gluCylinder(quad, 0.25, 0.25, 1, 15, 15); 
-    
+    GLfloat color_tube[] = { 0,0,0.5 };
+    glMaterialfv(GL_FRONT, GL_EMISSION, color_tube);
+    gluCylinder(quad, 0.25, 0.25, 1, 15, 15);
+
 
 }
 
@@ -94,8 +94,9 @@ void cgvScene3D::renderSceneB() {
 	GLfloat color_black[] = { 0,0,0 };
 	GLfloat color_piece[] = { 0,0.25,0 };
 
-	// TODO: Practice 2a. Part B. 
+	// TODO: Practice 2a. Part B.
 
+glTranslatef(-3.0,0,0);
 	glMaterialfv(GL_FRONT, GL_EMISSION, color_piece);
 
 	for (float x = 0; x <= 3.0; x += 1.5)
@@ -137,7 +138,7 @@ void cgvScene3D::renderSceneB() {
 	tube();
 	glPopMatrix();
 
-	for (float x = 0; x <= 3.0; x += 1.5) 
+	for (float x = 0; x <= 3.0; x += 1.5)
 	{
 		glPushMatrix();
 		glTranslatef(x, 0, 3.0);
