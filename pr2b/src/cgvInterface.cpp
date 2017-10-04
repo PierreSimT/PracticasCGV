@@ -13,20 +13,23 @@ cgvInterface::cgvInterface ():currentCam(0), camType(CGV_PARALLEL) {
 	camera[0].setParallelParameters(1 * 3, 1 * 3, 0.1, 200);
 
 	// TODO: Practice 2B.b: Define top, lateral and front cameras, respectively
-	//	camera[1] = 
-	//	camera[2] = 
-	//	camera[3] = 
+	camera[1] = cgvCamera( cgvPoint3D(0, 5.0, 0), cgvPoint3D(0, 0, 0), cgvPoint3D(1,0,0 ));
+	camera[1].setParallelParameters(3,3,0.1,200);
+	camera[2] = cgvCamera( cgvPoint3D(5.0, 0, 0), cgvPoint3D(0,0,0), cgvPoint3D(0,1,0));
+	camera[2].setParallelParameters(3,3,0.1,200);
+	camera[3] = cgvCamera( cgvPoint3D(0, 0, 5.0), cgvPoint3D(0,0,0), cgvPoint3D(0,1,0));
+	camera[3].setParallelParameters(3,3,0.1,200);
 }
 
 cgvInterface::~cgvInterface () {}
 
 
 // Public methods ----------------------------------------
-void cgvInterface::configure_environment(int argc, char** argv, 
-			                       int _width_window, int _height_window, 
+void cgvInterface::configure_environment(int argc, char** argv,
+			                       int _width_window, int _height_window,
 			                       int _pos_X, int _pos_Y, const char* _title)
 													 {
-	// initialization of the interface variables																	
+	// initialization of the interface variables
 	width_window = _width_window;
 	height_window = _height_window;
 
@@ -41,7 +44,7 @@ void cgvInterface::configure_environment(int argc, char** argv,
   glClearColor(1.0,1.0,1.0,0.0); // define the background color of the window
 
 	glEnable(GL_LIGHTING); // enable the lighting of the scene
-  glEnable(GL_NORMALIZE); // normalize the normal vectors required by the lighting computation. 
+  glEnable(GL_NORMALIZE); // normalize the normal vectors required by the lighting computation.
 
 }
 
@@ -51,11 +54,13 @@ void cgvInterface::init_rendering_loop() {
 
 void cgvInterface::set_glutKeyboardFunc(unsigned char key, int x, int y) {
   switch (key) {
-    case 'p': // change the type of projection between parallel and perspective. See the attribute camType; 
-
+    case 'p': // change the type of projection between parallel and perspective. See the attribute camType;
+			interface.camType = CGV_PERSPECTIVE;
+			interface.camera[interface.currentCam].apply();
 		break;
     case 'v': // change the current camera to show these views: panoramic, top, front and lateral view
-
+			interface.currentCam = (interface.currentCam + 1)%4;
+			interface.camera[interface.currentCam].apply();
 	  break;
     case '+': // zoom in
 
@@ -83,10 +88,10 @@ void cgvInterface::set_glutKeyboardFunc(unsigned char key, int x, int y) {
 }
 
 void cgvInterface::set_glutReshapeFunc(int w, int h) {
-  // dimension of the viewport with a new width and a new height of the display window 
+  // dimension of the viewport with a new width and a new height of the display window
 
 
-  // store the new values of the viewport and the display window. 
+  // store the new values of the viewport and the display window.
   interface.set_width_window(w);
   interface.set_height_window(h);
 
@@ -112,7 +117,7 @@ void cgvInterface::set_glutDisplayFunc() {
 
 	// refresh the window
 	glutSwapBuffers(); // it is used instead of glFlush() to avoid flickering
-	
+
 }
 
 void cgvInterface::init_callbacks() {
@@ -120,5 +125,3 @@ void cgvInterface::init_callbacks() {
 	glutReshapeFunc(set_glutReshapeFunc);
 	glutDisplayFunc(set_glutDisplayFunc);
 }
-
-
