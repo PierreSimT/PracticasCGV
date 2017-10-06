@@ -10,15 +10,22 @@ extern cgvInterface interface; // the callbacks must be static and this object i
 cgvInterface::cgvInterface ():currentCam(0), camType(CGV_PARALLEL) {
 
 	camera[0] = cgvCamera(cgvPoint3D(3.0, 2.0, 4), cgvPoint3D(0, 0, 0), cgvPoint3D(0, 1.0, 0));
+	camera[0].setPerspParameters( 60, 1, 1.0, 6.0 );
 	camera[0].setParallelParameters(1 * 3, 1 * 3, 0.1, 200);
+
 
 	// TODO: Practice 2B.b: Define top, lateral and front cameras, respectively
 	camera[1] = cgvCamera( cgvPoint3D(0, 5.0, 0), cgvPoint3D(0, 0, 0), cgvPoint3D(1,0,0 ));
+	camera[1].setPerspParameters( 60, 1, 1.0, 6.0 );
 	camera[1].setParallelParameters(3,3,0.1,200);
+	
 	camera[2] = cgvCamera( cgvPoint3D(5.0, 0, 0), cgvPoint3D(0,0,0), cgvPoint3D(0,1,0));
 	camera[2].setParallelParameters(3,3,0.1,200);
+	camera[2].setParallelParameters(1 * 3, 1 * 3, 0.1, 200);
+
 	camera[3] = cgvCamera( cgvPoint3D(0, 0, 5.0), cgvPoint3D(0,0,0), cgvPoint3D(0,1,0));
 	camera[3].setParallelParameters(3,3,0.1,200);
+	camera[3].setParallelParameters(1 * 3, 1 * 3, 0.1, 200);
 }
 
 cgvInterface::~cgvInterface () {}
@@ -55,24 +62,63 @@ void cgvInterface::init_rendering_loop() {
 void cgvInterface::set_glutKeyboardFunc(unsigned char key, int x, int y) {
   switch (key) {
     case 'p': // change the type of projection between parallel and perspective. See the attribute camType;
-			interface.camType = CGV_PERSPECTIVE;
-			interface.camera[interface.currentCam].apply();
+		switch (interface.camType) 
+		{
+			case CGV_PARALLEL:	
+				interface.camType = CGV_PERSPECTIVE;
+				double fov, asp, neara, fara;
+				interface.camera[interface.currentCam].getPerspParameters (fov, asp, neara, fara);
+				interface.camera[interface.currentCam].setPerspParameters( fov, asp, neara, fara );
+				interface.camera[interface.currentCam].apply();
+				break;
+			case CGV_PERSPECTIVE:
+				interface.camType = CGV_PARALLEL;
+				double wmin,wmax,ymin,ymax,near,far;
+    			interface.camera[interface.currentCam].getParallelParameters( wmin, wmax, ymin, ymax, near, far );
+    			interface.camera[interface.currentCam].setParallelParameters( wmax, ymax, near, far );
+				interface.camera[interface.currentCam].apply();
+				break;
+		}
+
 		break;
     case 'v': // change the current camera to show these views: panoramic, top, front and lateral view
 			interface.currentCam = (interface.currentCam + 1)%4;
 			interface.camera[interface.currentCam].apply();
 	  break;
     case '+': // zoom in
-
+    	interface.camera[interface.currentCam].zoom(1.05);
 		break;
     case '-': // zoom out
-
+    	interface.camera[interface.currentCam].zoom(0.95);
 	  break;
     case 'n': // increment the distance to the near plane
-
+    	switch ( interface.currentCam ) {
+    		case CGV_PARALLEL:
+				double wmin,wmax,ymin,ymax,near,far;
+    			interface.camera[interface.currentCam].getParallelParameters( wmin, wmax, ymin, ymax, near, far );
+    			interface.camera[interface.currentCam].setParallelParameters( wmax, ymax, near+0.2, far );
+    			interface.camera[interface.currentCam].apply();
+    			break;
+    		case CGV_PERSPECTIVE:
+    			double fov, asp, neara, fara;
+				interface.camera[interface.currentCam].getPerspParameters (fov, asp, neara, fara);
+				interface.camera[interface.currentCam].setPerspParameters( fov, asp, neara+0.2, fara );
+    	} 
 	  break;
     case 'N': // decrement the distance to the near plane
-
+    		switch ( interface.currentCam ) {
+    		case CGV_PARALLEL:
+				double wmin,wmax,ymin,ymax,near,far;
+    			interface.camera[interface.currentCam].getParallelParameters( wmin, wmax, ymin, ymax, near, far );
+    			interface.camera[interface.currentCam].setParallelParameters( wmax, ymax, near-0.2, far );
+    			interface.camera[interface.currentCam].apply();
+    			break;
+    		case CGV_PERSPECTIVE:
+    			double fov, asp, neara, fara;
+				interface.camera[interface.currentCam].getPerspParameters (fov, asp, neara, fara);
+				interface.camera[interface.currentCam].setPerspParameters( fov, asp, neara-0.2, fara );
+    	} 
+	  break;
 	  break;
     case '9': // change to format 16:9 with deformation
 
