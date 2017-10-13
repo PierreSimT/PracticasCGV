@@ -20,11 +20,11 @@ cgvInterface::cgvInterface ():currentCam(0), camType(CGV_PARALLEL) {
 	camera[1].setParallelParameters(3,3,0.1,200);
 	
 	camera[2] = cgvCamera( cgvPoint3D(5.0, 0, 0), cgvPoint3D(0,0,0), cgvPoint3D(0,1,0));
-	camera[2].setParallelParameters(3,3,0.1,200);
+	camera[2].setPerspParameters( 60, 1, 1.0, 6.0 );
 	camera[2].setParallelParameters(1 * 3, 1 * 3, 0.1, 200);
 
 	camera[3] = cgvCamera( cgvPoint3D(0, 0, 5.0), cgvPoint3D(0,0,0), cgvPoint3D(0,1,0));
-	camera[3].setParallelParameters(3,3,0.1,200);
+	camera[3].setPerspParameters( 60, 1, 1.0, 6.0 );
 	camera[3].setParallelParameters(1 * 3, 1 * 3, 0.1, 200);
 }
 
@@ -67,16 +67,22 @@ void cgvInterface::set_glutKeyboardFunc(unsigned char key, int x, int y) {
 			case CGV_PARALLEL:	
 				interface.camType = CGV_PERSPECTIVE;
 				double fov, asp, neara, fara;
-				interface.camera[interface.currentCam].getPerspParameters (fov, asp, neara, fara);
-				interface.camera[interface.currentCam].setPerspParameters( fov, asp, neara, fara );
-				interface.camera[interface.currentCam].apply();
+				for ( int i = 0; i < 4; i++ ) 
+				{
+					interface.camera[i].getPerspParameters (fov, asp, neara, fara);
+					interface.camera[i].setPerspParameters( fov, asp, neara, fara );
+					interface.camera[i].apply();
+				}
 				break;
 			case CGV_PERSPECTIVE:
 				interface.camType = CGV_PARALLEL;
 				double wmin,wmax,ymin,ymax,near,far;
-    			interface.camera[interface.currentCam].getParallelParameters( wmin, wmax, ymin, ymax, near, far );
-    			interface.camera[interface.currentCam].setParallelParameters( wmax, ymax, near, far );
-				interface.camera[interface.currentCam].apply();
+				for ( int i = 0; i < 4; i++ )
+				{
+    				interface.camera[i].getParallelParameters( wmin, wmax, ymin, ymax, near, far );
+    				interface.camera[i].setParallelParameters( wmax, ymax, near, far );
+					interface.camera[i].apply();
+				}
 				break;
 		}
 
@@ -90,9 +96,10 @@ void cgvInterface::set_glutKeyboardFunc(unsigned char key, int x, int y) {
 		break;
     case '-': // zoom out
     	interface.camera[interface.currentCam].zoom(0.95);
-	  break;
+		break;
     case 'n': // increment the distance to the near plane
-    	switch ( interface.currentCam ) {
+    	switch ( interface.camType ) 
+    	{
     		case CGV_PARALLEL:
 				double wmin,wmax,ymin,ymax,near,far;
     			interface.camera[interface.currentCam].getParallelParameters( wmin, wmax, ymin, ymax, near, far );
@@ -103,12 +110,15 @@ void cgvInterface::set_glutKeyboardFunc(unsigned char key, int x, int y) {
     			double fov, asp, neara, fara;
 				interface.camera[interface.currentCam].getPerspParameters (fov, asp, neara, fara);
 				interface.camera[interface.currentCam].setPerspParameters( fov, asp, neara+0.2, fara );
-    	} 
-	  break;
+				interface.camera[interface.currentCam].apply();
+				break;
+    	}
+    	break;
     case 'N': // decrement the distance to the near plane
-    		switch ( interface.currentCam ) {
+    	switch ( interface.camType ) 
+    	{
     		case CGV_PARALLEL:
-				double wmin,wmax,ymin,ymax,near,far;
+			double wmin,wmax,ymin,ymax,near,far;
     			interface.camera[interface.currentCam].getParallelParameters( wmin, wmax, ymin, ymax, near, far );
     			interface.camera[interface.currentCam].setParallelParameters( wmax, ymax, near-0.2, far );
     			interface.camera[interface.currentCam].apply();
@@ -117,11 +127,13 @@ void cgvInterface::set_glutKeyboardFunc(unsigned char key, int x, int y) {
     			double fov, asp, neara, fara;
 				interface.camera[interface.currentCam].getPerspParameters (fov, asp, neara, fara);
 				interface.camera[interface.currentCam].setPerspParameters( fov, asp, neara-0.2, fara );
-    	} 
-	  break;
-	  break;
+				interface.camera[interface.currentCam].apply();
+				break;
+	    } 
+	    break;
     case '9': // change to format 16:9 with deformation
-
+    	glViewport(0,0,interface.get_width_window()/9, interface.get_height_window()/16);
+    	glutSwapBuffers();
 	  break;
     case 'a': // enable/disable the visualization of the axes
 			interface.scene.set_axes(!interface.scene.get_axes());

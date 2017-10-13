@@ -94,10 +94,10 @@ void cgvCamera::apply() {
 	glLoadIdentity();
 
 	if (camType==CGV_PARALLEL) {
-		glOrtho(xwmin, xwmax, ywmin, ywmax, znear, zfar);
+		glOrtho(xwmin/currentZoom, xwmax/currentZoom, ywmin/currentZoom, ywmax/currentZoom, znear, zfar);
 	}
 	if (camType==CGV_PERSPECTIVE) {
-		gluPerspective(fovy,aspect,znear,zfar);
+		gluPerspective(fovy/currentZoom,aspect,znear,zfar);
 	}
 
 	glMatrixMode (GL_MODELVIEW);
@@ -109,22 +109,5 @@ void cgvCamera::zoom(double factor)
 {
 	// TODO: Practice 2b.C: Implement these functions. 
 	// Perspective ZOOM IN = DECREASE ANGLE
-	switch ( camType ) {
-		case CGV_PARALLEL:
-			double wmin,wmax,ymin,ymax,near,far;
-			getParallelParameters( wmin, wmax, ymin, ymax , near, far );
-			xwmin = wmin / factor;
-			xwmax = wmax / factor;
-			ywmin = ymin / factor;
-			ywmax = ymax / factor;
-			apply();
-			break;
-		case CGV_PERSPECTIVE:
-			double fov, asp, neara, fara;
-			getPerspParameters(fov, asp, neara, fara);
-			fovy = fov / factor;
-			apply();
-			break;
-
-	}
+	currentZoom = currentZoom * factor;
 }
