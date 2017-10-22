@@ -31,7 +31,7 @@ class cgvInterface {
 		cgvCamera camera[4]; 
 		int currentCam; // Current camera to visualize the scene, 
 		cameraType camType; // Camera type 	CGV_PARALLEL or CGV_PERSPECTIVE
-		
+		bool viewport;
 		
 	public:
 		// Default constructor and destructor
