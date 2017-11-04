@@ -59,16 +59,22 @@ void cgvInterface::init_rendering_loop() {
 void cgvInterface::set_glutKeyboardFunc(unsigned char key, int x, int y) {
   switch (key) {
     case 'x': // TODO: Section A: rotate positive X 
+		interface.scene.setX(10);
 		break;
     case 'X': // TODO: Section A: rotate negative X  
+		interface.scene.setX(-10);
 		break;
     case 'y': // TODO: Section A: rotate positive Y 
+		interface.scene.setY(10);
 		break;
     case 'Y': // TODO: Section A: rotate negative Y 
+		interface.scene.setY(-10);
 		break;
     case 'z': // TODO: Section A: rotate positive Z 
+		interface.scene.setZ(10);
 		break;
     case 'Z': // TODO: Section C: rotate negative Z 
+		interface.scene.setZ(-10);
 		break; 
 		
     case 'a': // enable/disable the visualization of the axes

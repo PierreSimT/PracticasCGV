@@ -21,8 +21,8 @@ class cgvScene3D {
 
 	protected:
 		// TODO: Section A: Define the attributes for interaction
+		float X, Y, Z;
 		
-
 		bool axes;
 		int sceneSelected; 
 
@@ -45,7 +45,9 @@ class cgvScene3D {
 		void set_axes(bool _axes){axes = _axes;};
 
 		// TODO: Section A: Implement the methods to rotate the scene w.r.t the axes. 
-
+		void setX(float X);
+		void setY(float Y);
+		void setZ(float Z);
 protected: 
 	    void setOctahedronWithMeshes(bool vertexArray, bool withNormals);
 

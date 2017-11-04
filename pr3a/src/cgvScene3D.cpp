@@ -24,7 +24,9 @@ cgvScene3D::cgvScene3D ():sceneSelected(1), mesh(NULL)
 
 
 	// TODO: Section A: Define the initial values of the interaction attributes. 
-
+	X = 0;
+	Y = 0;
+	Z = 0;
 	axes = true;
 
 }
@@ -36,11 +38,13 @@ cgvScene3D::~cgvScene3D() {
 
 // Public methods ----------------------------------------
 
+
+
 void 
 cgvScene3D::set(int scene) {
 	if (scene == sceneSelected) return; 
 
-	if (mesh!=NULL) delete mesh; 
+	//if (mesh!=NULL) delete mesh; 
 
 	switch (scene) {
 	case 1: //Initial Octahedron
@@ -53,11 +57,50 @@ cgvScene3D::set(int scene) {
 	sceneSelected = scene; 
 }
 
-void 
+void cgvScene3D::setX(float X)
+{
+	this->X += X;
+}
+
+void cgvScene3D::setY(float Y)
+{
+	this->Y += Y;
+}
+
+void cgvScene3D::setZ(float Z)
+{
+	this->Z += Z;
+}
+
+void
 cgvScene3D::setOctahedronWithMeshes(bool vertexArray, bool withNormals) {
 
 	// TODO: Sections B, C and D: insert here the code to create a mesh equivalent to the octahedron. 
-	//       Use the appropriate constructor of cgvTriangleMesh. 
+	//       Use the appropriate constructor of cgvTriangleMesh.
+
+	long int num_vertices; // number of vertices of the mesh of triangles
+	long int num_triangles; // number of triangles in the mesh
+
+	float vertex[] = { 0, 1, 0 ,
+						0,0,1 ,
+						-1,0,0 ,
+						0,0,-1 ,
+						1,0,0 ,
+						0,-1,0 };
+
+	unsigned char index[] = { 0,1,4,
+							1,5,4,
+							0,2,1,
+							2,5,1,
+							0,3,2,
+							3,5,2,
+							0,4,3,
+							4,5,3 };
+	
+	num_vertices = 6;
+	num_triangles = 8;
+
+	mesh = new cgvTriangleMesh(num_vertices, vertex, num_triangles, index, vertexArray, withNormals);
 }
 
 
@@ -109,6 +152,9 @@ void cgvScene3D::render(void) {
 	  glMaterialfv(GL_FRONT,GL_EMISSION,mesh_color);
 
 		// Section A: next call should be substituted by the new method to render the mesh
+		glRotatef(X, 1, 0, 0);
+		glRotatef(Y, 0, 1, 0);
+		glRotatef(Z, 0, 0, 1);
 	  if (sceneSelected == 1) {
 		glutSolidOctahedron();
 	  }
