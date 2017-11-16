@@ -38,18 +38,6 @@ cgvTriangleMesh::cgvTriangleMesh(long int _num_vertices, float *_vertices,
 		triangles[i] = _triangles[i];
 	}
 
-	float normal[] = {  0,0,1,
-						1,0,0,
-						0,0,1,
-						1,0,0,
-						0,0,1, 
-						0,0,1};
-
-	normals = new float[num_vertices*3];
-	for (int i = 0; i < num_vertices * 3; i++) {
-		normals[i] = normal[i];
-	}
-
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(3, GL_FLOAT, 0, vertices);
 	glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_BYTE, triangles);
@@ -97,15 +85,23 @@ void cgvTriangleMesh::render(void) {
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 	else if (vertexArray && includeNormals) {
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glVertexPointer(3, GL_FLOAT, 0, vertices);
 
-		glEnableClientState(GL_NORMAL_ARRAY);
-		glNormalPointer(GL_FLOAT, 0, normals);
+		//float normal[][3] = { { -1,1,-1},
+		//{0,1,0},
+		//{0,0,-1},
+		//{-1,0,0},
+		//{0,0,1},
+		//{0,0,-1} };
 
-		glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_BYTE, triangles);
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_NORMAL_ARRAY);
+		//glEnableClientState(GL_VERTEX_ARRAY);
+		//glVertexPointer(3, GL_FLOAT, 0, vertices);
+
+		//glEnableClientState(GL_NORMAL_ARRAY);
+		//glNormalPointer(GL_FLOAT, 0, normal);
+
+		//glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_BYTE, triangles);
+		//glDisableClientState(GL_VERTEX_ARRAY);
+		//glDisableClientState(GL_NORMAL_ARRAY);
 	}
 }
 

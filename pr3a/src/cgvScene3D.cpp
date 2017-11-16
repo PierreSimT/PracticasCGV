@@ -88,7 +88,7 @@ cgvScene3D::setOctahedronWithMeshes(bool vertexArray, bool withNormals) {
 						1,0,0 ,
 						0,-1,0 };
 
-	unsigned char index[] = { 0,1,4,
+	unsigned char index[] ={0,1,4,
 							1,5,4,
 							0,2,1,
 							2,5,1,
