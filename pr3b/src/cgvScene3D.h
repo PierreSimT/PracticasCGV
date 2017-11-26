@@ -13,6 +13,10 @@
 class cgvScene3D {
 	protected:
 ////// Section B: add here the attributes to control the degrees of freedom of the model
+		float armRightAngle;
+		float armLeftAngle;
+
+		bool goDown;
 
 
 ////// Section D: add here the attribute/s to control the selected object and to color it yellow
@@ -20,6 +24,7 @@ class cgvScene3D {
 
 		// Additional attributes		
 
+		
 		bool axes;
 
 	public:
@@ -32,9 +37,23 @@ class cgvScene3D {
 		// Methods
 		// method with the OpenGL calls to render the scene
     void render();
-	
-	////// Section B: include here the methods to modify the degrees of freedom of the model
 
+	void head();
+	void body();
+
+	void rightLeg();
+
+	void leftLeg();
+
+	void rightArm();
+
+	void leftArm();
+
+	void rightFoot();
+	void leftFoot();
+
+	////// Section B: include here the methods to modify the degrees of freedom of the model
+	void rotateOneArm(int arm, float angle);
 
 	////// Section D: include here the method/s to indicate the selected object
 

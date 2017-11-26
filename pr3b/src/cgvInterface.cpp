@@ -19,7 +19,7 @@ cgvInterface::~cgvInterface () {}
 
 // Public methods ----------------------------------------
 void cgvInterface::create_world(void) {
-	camera = cgvCamera(cgvPoint3D(6.0,4.0,8),cgvPoint3D(0,0,0),cgvPoint3D(0,1.0,0),
+	camera = cgvCamera(cgvPoint3D(6.0, 4.0, 8.0),cgvPoint3D(0,0,0),cgvPoint3D(0,1.0,0),
 		                                1*5, 1*5, 0.1, 200);
 
 }
@@ -67,6 +67,10 @@ void cgvInterface::set_glutKeyboardFunc(unsigned char key, int x, int y) {
 			interface.scene.set_axes(interface.scene.get_axes()?false:true);
 
 	  break;
+	case 'b':
+		interface.scene.rotateOneArm(0, 5);
+		interface.scene.rotateOneArm(1, 5);
+		break;
     case 27: // Escape key to exit
       exit(1);
     break;
