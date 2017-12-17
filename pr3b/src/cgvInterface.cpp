@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <stdio.h>
+#include <limits.h>
 
 #include "cgvInterface.h"
 
@@ -19,8 +20,17 @@ cgvInterface::~cgvInterface () {}
 
 // Public methods ----------------------------------------
 void cgvInterface::create_world(void) {
-	camera = cgvCamera(cgvPoint3D(6.0, 4.0, 8.0),cgvPoint3D(0,0,0),cgvPoint3D(0,1.0,0),
-		                                1*5, 1*5, 0.1, 200);
+	camera[0] = cgvCamera(cgvPoint3D(6.0, 4.0, 8.0), cgvPoint3D(0, 0, 0), cgvPoint3D(0, 1.0, 0)
+			,1*5, 1*5, 0.1, 200);
+
+	camera[1] = cgvCamera( cgvPoint3D(0, 8.0, 0), cgvPoint3D(0, 0, 0), cgvPoint3D(1,0,0 )
+			,1*5, 1*5, 0.1, 200);
+
+	camera[2] = cgvCamera( cgvPoint3D(8.0, 0, 0), cgvPoint3D(0,0,0), cgvPoint3D(0,1,0)
+			,1*5, 1*5, 0.1, 200);
+
+	camera[3] = cgvCamera( cgvPoint3D(0, 0, 8.0), cgvPoint3D(0,0,0), cgvPoint3D(0,1,0)
+			,1*5, 1*5, 0.1, 200);
 
 }
 
@@ -58,18 +68,31 @@ void cgvInterface::init_rendering_loop() {
 void cgvInterface::set_glutKeyboardFunc(unsigned char key, int x, int y) {
   switch (key) {
  ////// TODO: Section B: include here the change of the camera to show the top, lateral, side and perspective views
-
+ case 'v':
+			interface.currentCam = (interface.currentCam + 1)%4;
+			interface.camera[interface.currentCam].apply(interface.camType);
+	  break;
 
 ////// TODO: Section C: include here the modification of the degree of freedom by clicking the corresponding keys
 
 
     case 'a': // enable/disable the visualization of the axes
 			interface.scene.set_axes(interface.scene.get_axes()?false:true);
-
 	  break;
-	case 'b':
+	case 'r':
 		interface.scene.rotateOneArm(0, 5);
+		break;
+	case 'l':
 		interface.scene.rotateOneArm(1, 5);
+		break;
+	case 'R':
+		interface.scene.rotateArmSideways(0,5);
+		break;
+	case 'L':
+		interface.scene.rotateArmSideways(1,5);
+		break;
+	case 'b':
+		interface.scene.rotateBody(2b);
 		break;
     case 27: // Escape key to exit
       exit(1);
@@ -87,7 +110,7 @@ void cgvInterface::set_glutReshapeFunc(int w, int h) {
   interface.set_height_window(h);
 
   // Set up the kind of projection to be used
-  interface.camera.apply(interface.camType);
+  interface.camera[interface.currentCam].apply(interface.camType);
 
 }
 
@@ -106,7 +129,7 @@ void cgvInterface::set_glutDisplayFunc() {
 		interface.init_selection(1024,impact_list);
 	}
 	// Apply the camera and projection transformations according to its parameters and to the mode (selection or visualization)
-	interface.camera.apply(interface.camType);
+	interface.camera[interface.currentCam].apply(interface.camType);
 
 	// Render the scene
 	interface.scene.render();
@@ -126,10 +149,17 @@ void cgvInterface::set_glutMouseFunc(GLint button,GLint state,GLint x,GLint y) {
 
 // TODO: Section D: check if the left button of the mouse has been clicked. See glutMouseFunc for details.  
 
+	if ( button == GLUT_LEFT_BUTTON )
+		interface.pressed_button = true;
 // Section D: Store the button that has been pressed or released. If it has been clicked, then change to selection mode (CGV_SELECT)
+
+	if ( interface.pressed_button && state == GLUT_DOWN )
+		interface.mode = CGV_SELECT;
 
 // Section D: Save the position of the pixel when the mouse was clicked
 
+	interface.cursorX = x;
+	interface.cursorY = y;
 
 	glutPostRedisplay();
 
@@ -164,8 +194,17 @@ void cgvInterface::init_selection(int SIZE_IMPACT_LIST, GLuint *impact_list) {
 	// including the height and width of the selection area. 
 	// Prove several alternatives to test the right size of this small area.  
 
+	interface.mode = CGV_SELECT;
+	glSelectBuffer(SIZE_IMPACT_LIST, impact_list);
+
+	glRenderMode(GL_SELECT);
+
+	interface.camera[interface.currentCam].setSelection( 2, 2
+			, interface.cursorX, interface.cursorY );
+	interface.camera[interface.currentCam].apply(interface.camType);
 
 }
+
 int process_impacts(int num_impacts, GLuint *impact_list) {
 /* TODO: Section D: this function should return the code of the selected object, that can be different of the name assigned in the stack of names, 
   If hierarchical names have used it has to be taken into account in this function to return a single code */
@@ -174,11 +213,23 @@ int process_impacts(int num_impacts, GLuint *impact_list) {
 	// save the nearer to the observer (minimum Z)
 	// At the beginning consider that minimum Z has a value of 0xffffffff (the maximum value represented by type GLuint)
 
+	GLuint minimum = 0xffffffff;
+	int name = -1;
+	for ( int i = 0; i < num_impacts; i++ ) {
+		int numberNames = impact_list[i++];
+		int minZ = impact_list[i++];
+		int maxZ = impact_list[i++];
+		if ( minZ < minimum ) {
+			minimum = minZ;
+			name = impact_list[i];
+		}
+		i += numberNames;
+	}
 
 	// Section D: From the information of the impact with a minimum Z, return the code corresponding to this object: as the scene 
 	// is not saved in any data structure, to return the selected object use the names directly assigned to the objects 
 
-	return -1; 
+	return name;
 }
 
 void cgvInterface::finish_selection(int SIZE_IMPACT_LIST, GLuint *impact_list) {
@@ -186,12 +237,26 @@ void cgvInterface::finish_selection(int SIZE_IMPACT_LIST, GLuint *impact_list) {
 	// TODO 
 	// Section D: Change to the OpenGL visualization mode and get the number of impacts  
 
+	interface.mode = CGV_VISUALIZE;
+	int numImpacts = glRenderMode(GL_RENDER);
+
 	// Section D: if there are impacts, process them with the function process_impacts(int num_impacts, GLuint *impact_list);
 	// obtaining the selected object, if any
 
+	if ( numImpacts > 0 ) {
+		interface.selected_object = process_impacts(numImpacts, impact_list);
+		interface.scene.selectedObject(interface.selected_object);
+	} else {
+		interface.scene.selectedObject(-1);
+	}
+
 	// Section D: the selection has finished, change to normal visualization
+
+	interface.mode = CGV_VISUALIZE;
 
 	// Section D: set up the camera with the parameters of the visualization mode
 
+	interface.camera[interface.currentCam].setVisualization();
+	interface.camera[interface.currentCam].apply(interface.camType);
 }
 

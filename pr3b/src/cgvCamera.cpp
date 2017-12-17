@@ -69,8 +69,14 @@ void cgvCamera::apply(cameraType type) {
 
 	if (mode == CGV_SELECT) {
 		////// TODO: Section D: get the current size of the viewport
+		int viewport [4];
+		glGetIntegerv(GL_VIEWPORT, viewport );
+
 		////// TODO: Section D: Modify the projection using the function gluPickMatrix and 
 		//////            generate the view volume around the clicked pixel
+
+		gluPickMatrix(cursorX, viewport[3]-cursorY, width_selection, height_selection, viewport);
+
 	}
 
 
